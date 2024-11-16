@@ -1,0 +1,60 @@
+.section-py {
+    padding: 2.25rem 0 !important;
+}
+
+.section .title-box {
+  
+}
+
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 30px;
+    margin: 0 50px;
+}
+.product-item__image {
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+    max-height: 265px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: 0.3s;
+}
+
+.product-item__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.product-item__price {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333;
+    margin-top: 1px;
+}
+
+.product-item__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333;
+    display: inline-block;
+    /* max-width: 70%; */
+    /* white-space: nowrap; */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* margin-top: 10px; */
+}
+
+.product-item__price .sale-price {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: #999;
+    text-decoration: line-through;
+    margin-left: 5px;
+}
+
+.product-item__ranking {
+    color: #f1c40f;
+}
