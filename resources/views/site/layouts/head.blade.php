@@ -33,11 +33,12 @@
 
     <!-- Icons -->
 
-        <link rel="stylesheet" as="style"
-        href="{{asset('site/css/core.css')}}" />
-
+    
         <link rel="stylesheet" as="style"
         href="{{asset('site/css/theme-default.css')}}" />
+        <link rel="stylesheet" as="style"
+                href="{{asset('site/css/core.css')}}" />
+
     <!-- Core CSS -->
     <link rel="stylesheet" as="style"
         href="{{asset('site/css/front-page.css')}}" />
