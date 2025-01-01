@@ -20,16 +20,12 @@
     object-fit: cover;
   }
 
-  body {
-    background: #000;
-    color: #000;
-  }
-
   .swiper {
     width: 100%;
-    height: 300px;
+    /* height: 300px; */
     margin-left: auto;
     margin-right: auto;
+    position: relative;
   }
 
   .swiper-slide {
@@ -38,24 +34,25 @@
   }
 
   .mySwiper2 {
-    height: 80%;
+    height: 100%;
     width: 100%;
   }
 
   .mySwiper {
     height: 20%;
     box-sizing: border-box;
-    padding: 10px 0;
   }
 
-  .mySwiper .swiper-slide {
-    width: 25%;
-    height: 100%;
+  .product-gallery .mySwiper .swiper-slide {
+    width: 100% !important;
+    height: 25%;
     opacity: 0.4;
+    margin-bottom: 5px;
+    cursor: pointer;
   }
 
   .mySwiper .swiper-slide-thumb-active {
-    opacity: 1;
+    opacity: 1 !important;
   }
 
   .swiper-slide img {
@@ -66,7 +63,31 @@
   }
 
   .product-gallery {
-    max-height: 70vh;
+    max-height: 50vh;
+    width: 55%;
+    display: flex;
+  }
+
+  .product-thumb-slider {
+    width: 150px !important;
+    height: 100%;
+    margin-right: 20px;
+  }
+  .product-thumb-slider .swiper-wrapper {
+    /* rotate: 90deg; */
+    display: flex;
+    flex-direction: column;
+  
+  }
+
+  .product-thumb-slider .swiper-wrapper {
+
+  }
+  .product-gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
   }
 
   .product-detail-info {
@@ -74,8 +95,8 @@
   }
 
   .p-l {
-    padding-left: 100px;
-    padding-right: 100px;
+    max-width: 1200px;
+    margin: auto;
   }
 
   .ml-2 {
@@ -90,8 +111,15 @@
     font-size: 18px;
 }
 .market-price-box {
-    display: flex;
+    /* display: flex; */
     vertical-align: text-bottom;
+}
+
+.sub_price {
+  font-size: 18px;
+  font-weight: 200;
+  color: #585757f8;
+  text-decoration: line-through;
 }
 
 .original-price {
@@ -99,3 +127,132 @@
     font-weight: 700;
     color: red;
 }
+
+.product-action-btn {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+  position: absolute;
+  bottom: 50px;
+  /* width: 80%; */
+}
+.product-action-btn i {
+  font-size: 25px;
+  /* color: #fff; */
+  margin-right: 5px;
+}
+.right-bar-products {
+  width: 100%;
+  /* background-color: red; */
+  height: 100%;
+}
+
+.product-item__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+body {
+   background: #f5f5f5 !important;
+}
+
+.light-style .landing-hero:after {
+  background-color: #f5f5f5
+}
+
+.product-detail-box {
+  display: grid;
+  grid-template-columns: 1fr 250px;
+  grid-gap: 20px;
+}
+
+.product-header-box {
+  display: flex;
+}
+
+
+
+@media screen and (max-width: 768px) {
+  .product-header-box {
+    display: block !important;
+  }
+  .mySwiper2 {
+    height: 80%;
+    width: 100%;
+  }
+
+  .product-gallery {
+    width: 100%;
+    display: block;
+  }
+
+  .mySwiper .swiper-slide {
+    margin-top: 10px;
+    width: 25% ;
+    height: 100%;
+    /* opacity: 0.4; */
+    margin-bottom: 5px;
+    cursor: pointer;
+  }
+
+  .product-thumb-slider {
+    width: unset !important;
+    /* height: 100%;
+    margin-right: 20px; */
+  }
+  .product-thumb-slider .swiper-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+  }
+  .product-thumb-slider .swiper-wrapper {
+    display: flex;
+    flex-direction: row;
+  }
+  .product-detail-info {
+    padding:20px 5px;
+  }
+  .product-detail-info > .d-flex  {
+    display: block !important;
+  }
+
+  .product-detail-info .ml-2 {
+    margin-left: 0;
+  }
+
+  .product-detail-info .product-action-btn {
+    position: relative;
+    bottom: unset !important;
+  }
+
+  .product-gallery .mySwiper .swiper-slide {
+    width: 20% !important;
+  }
+
+  .product-detail-box {
+    display: block !important;
+  }
+  iframe {
+    width: 100%;
+  }
+  .relative-list-product {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 10px;
+  }
+
+  .relative-list-product hr {
+    display: none;
+  }
+
+  .relative-list-product .product-item__info {
+    display: block !important;
+  }
+
+  .panel-body {
+    padding: 5px !important;
+  }
+}
+

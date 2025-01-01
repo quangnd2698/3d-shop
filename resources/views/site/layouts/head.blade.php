@@ -3,15 +3,12 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-    <title>Landing - Front Pages |
-        sneat -
-        Bootstrap Dashboard PRO
-    </title>
+    <title>3D shop</title>
     <meta name="description"
         content="Most Powerful &amp; Comprehensive Bootstrap 5 HTML Admin Dashboard Template built for developers!" />
     <meta name="keywords" content="dashboard, bootstrap 5 dashboard, bootstrap 5 design, bootstrap 5">
     <!-- laravel CRUD token -->
-    <meta name="csrf-token" content="Cl9LWligyNIQ2H3GGddd48gsdzmV8lXTynhyKFxu">
+    <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <!-- Canonical SEO -->
     <link rel="canonical" href="https://themeselection.com/item/sneat-bootstrap-laravel-admin-template/">
     <!-- Favicon -->
@@ -56,5 +53,6 @@
     <link rel="stylesheet" as="style"
     href="{{asset('site/css/helpers.css')}}" />
    <script src="{{asset('site/js/helpers.js')}}"></script>
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
    @yield('styles')
   </head>

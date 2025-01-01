@@ -41680,7 +41680,7 @@ a.bg-vimeo:focus {
 }
 
 .landing-hero {
-    padding-top: 5.1rem !important;
+    padding-top: 5.8rem !important;
 }
 
 .mt-0 {
@@ -41814,4 +41814,64 @@ a.bg-vimeo:focus {
 
 .m-n50 {
     margin: -.125rem !important
+}
+
+.swal2-title {
+    line-height:1.5 !important;
+}
+
+.cart-header-box {
+    display: flex;
+    text-align: center;
+    align-items: center;
+    margin-right: 10px;
+    color: black;
+}
+
+.cart-header-box i {
+    font-size: 30px;
+    position: relative;
+
+}
+
+.cart-header-box i span{
+    padding: 1px;
+    line-height: 1.375;
+    height: 1.2rem;
+    width: 1.2rem;
+    font-size: .812rem;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #696cff;
+    border-color: #696cff;
+    box-shadow: 0 .125rem .25rem #696cff66;
+}
+
+.landing-menu.search-header {
+    border-radius: 25px !important;
+}
+
+.landing-menu.search-header input {
+    border-radius: 20px 0 0 20px !important
+}
+
+.landing-menu.search-header span {
+    border-radius: 0 20px 20px 0 !important;
+    cursor: pointer;
+    border-left: 1px solid #696cff !important;
+    background-color: #696cff;
+    color: #ffffff;
+    font-size: 1.45rem;
+    font-weight: 600;
+}
+
+.landing-menu.search-header span:hover {
+    border: 1px solid #696cff !important;
+}
+
+.landing-menu.search-header .input-group {
+    border-radius: 22px !important;
+
 }

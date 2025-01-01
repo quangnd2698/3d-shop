@@ -59,21 +59,10 @@
                     <p class="footer-text footer-logo-description mb-6">
                         Most developer friendly & highly customisable Admin Dashboard Template.
                     </p>
-                    <form class="footer-form">
-                        <label for="footer-email" class="small">Subscribe to newsletter</label>
-                        <div class="d-flex mt-1">
-                            <input type="email"
-                                class="form-control rounded-0 rounded-start-bottom rounded-start-top"
-                                id="footer-email" placeholder="Your email" />
-                            <button type="submit"
-                                class="btn btn-primary shadow-none rounded-0 rounded-end-bottom rounded-end-top">
-                                Subscribe
-                            </button>
-                        </div>
-                    </form>
+                    
                 </div>
                 <div class="col-lg-2 col-md-4 col-sm-6">
-                    <h6 class="footer-title mb-6">Demos</h6>
+                    <h6 class="footer-title mb-6">Danh mục</h6>
                     <ul class="list-unstyled">
                         <li class="mb-4">
                             <a href="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1"
@@ -123,13 +112,26 @@
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-4">
-                    <h6 class="footer-title mb-6">Download our app</h6>
-                    <a href="javascript:void(0);" class="d-block mb-4"><img
-                            src="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo/assets/img/front-pages/landing-page/apple-icon.png"
-                            alt="apple icon" /></a>
-                    <a href="javascript:void(0);" class="d-block"><img
-                            src="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo/assets/img/front-pages/landing-page/google-play-icon.png"
-                            alt="google play icon" /></a>
+                    <div class="d-block mb-4 footer-link">
+                        Email: 3dstore@gmail.com
+                    </div>
+                    <div class="d-block mb-4 footer-link">
+                        Phone: 0867882698
+                    </div>
+                    <div>
+                        <a href="https://github.com/themeselection" class="me-4" target="_blank">
+                            <img src="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo/assets/img/front-pages/icons/github.svg" alt="github icon">
+                        </a>
+                        <a href="https://www.facebook.com/ThemeSelections/" class="me-4" target="_blank">
+                            <img src="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo/assets/img/front-pages/icons/facebook.svg" alt="facebook icon">
+                        </a>
+                        <a href="https://twitter.com/Theme_Selection" class="me-4" target="_blank">
+                            <img src="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo/assets/img/front-pages/icons/twitter.svg" alt="twitter icon">
+                        </a>
+                        <a href="https://www.instagram.com/themeselection/" target="_blank">
+                            <img src="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo/assets/img/front-pages/icons/instagram.svg" alt="google icon">
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -138,13 +140,12 @@
         <div
             class="container d-flex flex-wrap justify-content-between flex-md-row flex-column text-center text-md-start">
             <div class="mb-2 mb-md-0">
-                <span class="footer-bottom-text">©
+                <span class="footer-bottom-text">Copyright ©
                     <script>
                         document.write(new Date().getFullYear());
                     </script>
                 </span>
-                <a href="https://themeselection.com" target="_blank" class="text-white">ThemeSelection,</a>
-                <span class="footer-bottom-text"> Made with ❤️ for a better web.</span>
+                <a href="https://themeselection.com" target="_blank" class="text-white">3D store</a>
             </div>
             <div>
                 <a href="https://github.com/themeselection" class="me-4" target="_blank">

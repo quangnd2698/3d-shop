@@ -1,5 +1,5 @@
 <nav class="layout-navbar shadow-none py-0">
-    <div class="container">
+    <div class="container header-container">
         <div class="navbar navbar-expand-lg landing-navbar px-3 px-md-8">
             <!-- Menu logo wrapper: Start -->
             <div class="navbar-brand app-brand demo d-flex py-0 me-4 me-xl-8">
@@ -67,10 +67,7 @@
                     <i class="tf-icons bx bx-x bx-lg"></i>
                 </button>
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium" aria-current="page"
-                            href="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/front-pages/landing#landingHero">Trang chủ</a>
-                    </li>
+
                     <li class="nav-item mega-dropdown ">
                         <a href="javascript:void(0);"
                             class="nav-link dropdown-toggle navbar-ex-14-mega-dropdown mega-dropdown fw-medium"
@@ -289,24 +286,22 @@
                         <a class="nav-link fw-medium"
                             href="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/front-pages/landing#landingFeatures">Mẫu miễn phí</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium"
-                            href="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/front-pages/landing#landingTeam">Mới nhất</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium"
-                            href="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/front-pages/landing#landingFAQ">Sắp ra mắt</a>
-                    </li>
-                    <li class="nav-item">
+
+                    {{-- <li class="nav-item">
                         <a class="nav-link fw-medium"
                             href="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/front-pages/landing#landingContact">Liên hệ</a>
-                    </li>
+                    </li> --}}
                 </ul>
             </div>
-            <div class="landing-menu-overlay d-lg-none"></div>
+            <div class="landing-menu search-header">
+                    <div class="input-group input-group-merge">
+                        <span class="input-group-text" id="basic-addon-search31"><i class="bx bx-search"></i></span>
+                        <input type="text" class="form-control" placeholder="Search..." aria-label="Search..." aria-describedby="basic-addon-search31">
+                      </div>
+            </div>
             <!-- Menu wrapper: End -->
             <!-- Toolbar: Start -->
-            <ul class="navbar-nav flex-row align-items-center ms-auto">
+            <ul class="navbar-nav flex-row align-items-center">
                 <!-- Style Switcher -->
                 <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-1">
                     <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);"
@@ -335,12 +330,19 @@
                 <!-- navbar button: Start -->
                 <li>
                     <a href="https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/auth/login-cover"
-                        class="btn btn-primary" target="_blank"><i class='bx bxs-right-arrow-circle'></i><span
+                        class="btn btn-register-header" target="_blank"><i class='bx bxs-right-arrow-circle'></i><span
                             class="d-none d-md-block" style="margin-left:5px">Login/Register</span></a>
                 </li>
                 <!-- navbar button: End -->
             </ul>
             <!-- Toolbar: End -->
+            <div class="landing-menu w-100 search-header-mobile">
+                <div class="input-group input-group-merge">
+                    <span class="input-group-text" id="basic-addon-search31"><i class="bx bx-search"></i></span>
+                    <input type="text" class="form-control" placeholder="Search..." aria-label="Search..." aria-describedby="basic-addon-search31">
+                </div>
+            </div>
+     
         </div>
     </div>
 </nav>

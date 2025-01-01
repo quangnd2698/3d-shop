@@ -21,22 +21,24 @@
 
 
     <!-- Navbar: Start -->
-    @include('site.layouts.navbar')
+    <livewire:site.inc.navbar />
     <!-- Navbar: End -->
 
     <!-- Sections:Start -->
-    <div data-bs-spy="scroll" class="scrollspy-example">
-        @yield('content')
-        <!-- Contact Us: End -->
-    </div>
+    @yield('content')
     <!-- / Sections:End -->
-
+    {{-- @if (!isset($hiddenWiewedProducts))
+        @include('site.component.product-viewed')
+    @endif --}}
     <!-- Footer: Start -->
     @include('site.layouts.footer')
     <!-- Footer: End -->
     <!--/ Layout Content -->
+    @include('sweetalert::alert')
 
     @include('site.layouts.scripts')
+
+
 </body>
 
 </html>

@@ -50,14 +50,4 @@
         grid-gap: 10px;
     }
 
-    .product-item__info.name-info {
-        display: block !important;
-    }
-
-    .product-item__info .product-item__title {
-        font-size: 0.9rem;
-    }
-    .product-idea {
-        text-align: center !important;
-    }
 }
