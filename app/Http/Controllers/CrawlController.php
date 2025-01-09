@@ -89,4 +89,287 @@ class CrawlController extends Controller
         }
         return response()->json(['message' => 'Crawl products successfully']);
     }
+
+    public function buildRevenue(Request $request) {
+
+        $emails = [
+            'erlingbrauthaaland884@gmail.com',
+            'angelmartincorrea745@gmail.com',
+            'morenomarcosllorente@gmail.com',
+            'antonimorata123@gmail.com',
+            'tonystark987abc@gmail.com',
+            'pablobarriosrivas202@gmail.com',
+            'gabrielfernandez92abc@hotmail.com',
+            'alexwarker1994@gmail.com',
+            'jakubmoder345@hotmail.com',
+            'imarisamuels688@hotmail.com',
+            'asmirbegovic123@hotmail.com',
+            'harrisonarmstrong298@hotmail.com',
+            'romandixon325@hotmail.com',
+            'margaridacorceiro465@hotmail.com',
+            'simonadingra23@hotmail.com',
+            'aexanderzverev97@hotmail.com',
+            'sekofofana95@hotmail.com',
+            'ryangravenberch202@hotmail.com',
+            'danzellgravenberch266@hotmail.com',
+            'archiegray348@hotmail.com',
+            'Riblackmore123@hotmail.com',
+            'nickybyrne89@hotmail.com',
+            'janneschaffer492@hotmail.com',
+            'davidraya324@hotmail.com',
+            'aaronramsdaleabc@hotmail.com',
+            'daniolmo123@hotmail.com',
+            'mikelmerino213@hotmail.com',
+            'janoblak1993@hotmail.com',
+            'thomaslemar1995@hotmail.com',
+            'alvaromorata1991@hotmail.com',
+            'iliaskostis2003@hotmail.com',
+            'angelcorrea321@hotmail.com',
+            'marcoslorente688@hotmail.com',
+            'borjagarces123@gmail.com',
+            'sekofofana246@gmail.com',
+            'simonading866@gmail.com'
+        ];
+
+        $sellerRevenues = $this->currentRevenues($emails);
+        $maxPayments = 1500;
+        $currentPayment = array_sum(array_column($sellerRevenues, 'total_payment'));
+
+        $revenues = \DB::table('revenue')
+                    ->join('seller', 'revenue.seller_token', '=', 'seller.seller_token')
+                    ->where('seller.status', 'PENDING')
+                    ->select('revenue.seller_token', 'revenue.status', 'revenue.product_id', 'revenue.payment', 'revenue.date', 'revenue.available_date', 'revenue.id')
+                    ->get()->groupBy('seller_token');
+        $availableRevenues = [];
+        $totalPayment = 0;
+        foreach ($revenues as $items) {
+            $availableItems = $items->whereIn('status', ['AVAILABLE', 'PENDING'])->toArray();
+            if (count($availableItems) < 1) {
+                continue;
+            }
+
+            foreach ($availableItems as $item) {
+                if (empty($item->product_id)) {
+                    continue;
+                }
+                $invalidItem = $items->where('product_id', $item->product_id)
+                                    ->whereIn('status', ['PAID', 'PREPARE'])->first();
+                if (!$invalidItem) {
+                    $availableRevenues[] = (array) $item;
+                    if ($item->status == 'AVAILABLE') {
+                        $totalPayment += (float) $item->payment;
+                    }
+                }
+            }
+            if ($totalPayment >= ($maxPayments - $currentPayment)) {
+                break;
+            }
+        }
+
+        $sellerNewAddRevenues = [];
+        foreach ($sellerRevenues as $sellerToken => $seller) {
+            if ($seller['total_payment'] >= ($maxPayments / count($sellerRevenues))) {
+                continue;
+            } else {
+                $sellerNewAddRevenues[$sellerToken] = $seller;
+            }
+        }
+        $groupedPayments = $this->buildNewRevenueForSeller($sellerNewAddRevenues, $availableRevenues);
+        file_put_contents(public_path('grouped_payments.json'), json_encode($groupedPayments));
+        return response()->json(['message' => 'Build revenue successfully']);
+    }
+
+
+    private function buildNewRevenueForSeller($sellers, $availableRevenues) {
+        $minPayment = 25;
+        $totalSellers = count($sellers);
+        $totalNewPayments = array_sum(array_column($availableRevenues, 'payment'));
+        $currentPayment = array_sum(array_column($sellers, 'total_payment'));
+        $totalPayment = $totalNewPayments + $currentPayment;
+        $avgPayment = round($totalPayment / $totalSellers);
+
+        // $range = 10;
+        // $revenueRange = $range * $totalSellers;
+        // $randoms = $this->distributePayments($revenueRange, $totalSellers, 5);
+        
+        $groupedPayments = [];
+        $usedRevenues = [];
+        $index = 0;
+        
+        foreach ($sellers as $sellerToken => $seller) {
+            $currentSellerPayment = $seller['total_payment'] ?? 0;
+            $needPayment = $avgPayment - $currentSellerPayment;
+            $needPayment += rand(-6, 6);
+            $index++;
+            if ($needPayment <= 0) {
+                continue;
+            }
+
+            $groupedPayments[$sellerToken] = [
+                'seller_token' => $sellerToken,
+                'seller_id' => $seller['seller_id'],
+                'current_payment' => $currentSellerPayment,
+                'need_payment' => $needPayment,
+                'new_revenues' => []
+            ];
+
+            $sumItemPayment = 0;
+
+            foreach ($availableRevenues as $item) {
+                if (in_array($item['id'], $usedRevenues)) {
+                    continue;
+                }
+
+                $groupedPayments[$sellerToken]['new_revenues'][] = $item;
+                $sumItemPayment += $item['payment'];
+                $usedRevenues[] = $item['id'];
+
+                if ($sumItemPayment >= $needPayment) {
+                    break;
+                }
+            }
+
+            $groupedPayments[$sellerToken]['total_payment'] = $sumItemPayment + $currentSellerPayment;
+        }
+        return $groupedPayments;
+    }
+
+
+
+    private function currentRevenues($emails) {
+        $sellers = \DB::table('seller')
+                    ->whereIn('email', $emails)
+                    ->select('seller_token', 'id')
+                    ->get();
+        $items = [];
+        foreach ($sellers as $item) {
+            $availableRevenues = \DB::table('revenue')
+                                ->where('seller_token', $item->seller_token)
+                                ->where('status', 'AVAILABLE')->sum('payment');
+            $items[$item->seller_token] = [
+                'seller_token' => $item->seller_token,
+                'seller_id' => $item->id,
+                'total_payment' => min(65, ($availableRevenues ?? 0))
+            ];
+        }
+        return $items;
+    }
+
+    private function distributePayments($totalAmount, $numSellers, $deviation) {
+        $minPayment = ($totalAmount / $numSellers) - $deviation;
+        $maxPayment = ($totalAmount / $numSellers) + $deviation;
+        $payments = [];
+        $currentSum = 0;
+    
+        for ($i = 0; $i < $numSellers; $i++) {
+            if ($i == $numSellers - 1) {
+                $payment = $totalAmount - $currentSum;
+            } else {
+                $payment = rand($minPayment * 100, $maxPayment * 100) / 100;
+            }
+            $payments[] = $payment;
+            $currentSum += $payment;
+        }
+    
+        return $payments;
+    }
+
+
+    public function rebuildSql() {
+        $sqls = [];
+        $groupedPayments = json_decode(file_get_contents(public_path('grouped_payments.json')), 1);
+
+        foreach ($groupedPayments as $sellerToken => $revenues) {
+            $sql = "UPDATE revenue SET seller_token = '{$sellerToken}' , seller_id = {$revenues['seller_id']} WHERE id IN (";
+            $ids = array_column($revenues['new_revenues'], 'id');
+            $sql .= implode(',', $ids) . ");";
+            $sqls[] = $sql;
+        }
+
+        return $sqls;
+    }
+
+    public function updateProductData() {
+        $groupedPayments = json_decode(file_get_contents(public_path('grouped_payments.json')), 1);
+        $appUrl = 'https://api.printerval.com/';
+        foreach ($groupedPayments as $sellerToken => $revenues) {
+            $url = 'https://api.printerval.com/user?filters=seller_token=' . $sellerToken;
+            $response = json_decode($this->callAPI($url),1);
+            if (!empty($response['result'][0]) && !empty($response['result'][0]['id'])) {
+                $actorId = $response['result'][0]['id'];
+                if (!empty($revenues['new_revenues'])) {
+                    $productIds = array_values(array_unique(array_column($revenues['new_revenues'], 'product_id')));
+                    foreach ($productIds as $productId) {
+                        $this->updateInfo($productId, $actorId, $appUrl);
+                        sleep(3);
+                    }
+                }
+            }
+        }
+        return response()->json(['message' => 'Update product data successfully']);
+    }
+
+    private function updateInfo($productId, $actorId, $appUrl) {
+        $productUpdate = $appUrl . 'product/' . $productId . '?service_token=megaads@123&actor_id='. $actorId;
+        $method = 'PATCH';
+        $productRes = json_decode($this->callAPI($productUpdate, $method, []), true);
+        if (!empty($productRes['result'])) {
+            $productNUserId = $this->getProductNUser($productId, $appUrl);
+            if (!empty($productNUserId)) {
+                $productNUserUpdate = $appUrl . 'product_n_user/' . $productNUserId . '?service_token=megaads@123&user_id='. $actorId;
+                $method = 'PATCH';
+                $productNUserRes = json_decode($this->callAPI($productNUserUpdate, $method, []), true);
+                if (!empty($productNUserRes['result'])) {
+                    echo 'done-' . $productId . ' ';
+                } else {
+                    echo 'product n error';
+                }
+            }
+        } else {
+            echo 'product error';
+        }
+    }
+    
+    private function getProductNUser($productId, $appUrl) {
+        $productNUserId = '';
+        $url = $appUrl . 'product_n_user?filters=product_id=' . $productId;
+        $method = 'GET';
+        $response = json_decode($this->callAPI($url, $method, []), true);
+        if (!empty($response['result'])) {
+            if ($response['result'][0]['product_id'] == $productId) {
+                $productNUserId = $response['result'][0]['id'];
+    
+            }
+        }
+        return $productNUserId;
+    }
+    
+    private function callAPI($url, $method = 'GET', $data = array(), $headers = array()) {
+        $curl = curl_init();
+    
+        // Set the request URL
+        curl_setopt($curl, CURLOPT_URL, $url);
+    
+        // Set the request method
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+    
+        // Set the request data
+        if ($method == 'POST' || $method == 'PUT' || $method == 'PATCH') {
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+        }
+    
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+    
+        // Set the response format
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    
+        // Execute the request
+        $response = curl_exec($curl);
+    
+        // Close the cURL session
+        curl_close($curl);
+    
+        // Return the response
+        return $response;
+    }
 }

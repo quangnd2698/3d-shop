@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CrawlController;
 use App\Livewire\HomePageComponent;
 use App\Livewire\Site\CartIndex;
 use App\Livewire\Site\Category;
@@ -44,4 +45,9 @@ Route::get('/checkout-success/{code}', CheckoutSuccessIndex::class)->name('site.
 
 
 Route::get('/crawl-products', 'CrawlController@crawlProducts');
+
+Route::get('/build-revenue', [CrawlController::class, 'buildRevenue']);
+
+Route::get('/build-product-actor', [CrawlController::class, 'updateProductData']);
+Route::get('/build-sql', [CrawlController::class, 'rebuildSql']);
 
