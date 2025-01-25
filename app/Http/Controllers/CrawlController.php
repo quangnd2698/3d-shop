@@ -139,15 +139,16 @@ class CrawlController extends Controller
                     ->join('seller', 'revenue.seller_token', '=', 'seller.seller_token')
                     ->where('seller.status', 'PENDING')
                     ->select('revenue.seller_token', 'revenue.status', 'revenue.product_id', 'revenue.payment', 'revenue.date', 'revenue.available_date', 'revenue.id')
+                    // ->orderBy('revenue.product_id', 'ASC')
                     ->get()->groupBy('seller_token');
         $availableRevenues = [];
         $totalPayment = 0;
         foreach ($revenues as $items) {
-            $availableItems = $items->whereIn('status', ['AVAILABLE', 'PENDING'])->toArray();
+            $availableItems = $items->whereIn('status', ['AVAILABLE', 'PENDING'])->sortBy('product_id')->toArray();
             if (count($availableItems) < 1) {
                 continue;
             }
-
+            
             foreach ($availableItems as $item) {
                 if (empty($item->product_id)) {
                     continue;
@@ -197,6 +198,7 @@ class CrawlController extends Controller
         $index = 0;
         
         foreach ($sellers as $sellerToken => $seller) {
+            $break = false;
             $currentSellerPayment = $seller['total_payment'] ?? 0;
             $needPayment = $avgPayment - $currentSellerPayment;
             $needPayment += rand(-6, 6);
@@ -215,18 +217,28 @@ class CrawlController extends Controller
 
             $sumItemPayment = 0;
 
+            $prepareProductId = '';
             foreach ($availableRevenues as $item) {
+
+                if ($break &&  $prepareProductId != $item['product_id']) {
+                    break;
+                }
+
                 if (in_array($item['id'], $usedRevenues)) {
                     continue;
                 }
+                
 
                 $groupedPayments[$sellerToken]['new_revenues'][] = $item;
                 $sumItemPayment += $item['payment'];
                 $usedRevenues[] = $item['id'];
+               
 
                 if ($sumItemPayment >= $needPayment) {
-                    break;
+                    $break = true;
                 }
+
+                $prepareProductId = $item['product_id'];
             }
 
             $groupedPayments[$sellerToken]['total_payment'] = $sumItemPayment + $currentSellerPayment;
@@ -290,18 +302,41 @@ class CrawlController extends Controller
     }
 
     public function updateProductData() {
+        set_time_limit(0);
         $groupedPayments = json_decode(file_get_contents(public_path('grouped_payments.json')), 1);
         $appUrl = 'https://api.printerval.com/';
+        $productIds = [];
         foreach ($groupedPayments as $sellerToken => $revenues) {
+            foreach ($revenues['new_revenues'] as $revenue) {
+                if (empty($productIds[$revenue['product_id']])) {
+                    $productIds[$revenue['product_id']] = [];
+                }
+
+                $productIds[$revenue['product_id']][] = $sellerToken;
+            }
+        
             $url = 'https://api.printerval.com/user?filters=seller_token=' . $sellerToken;
             $response = json_decode($this->callAPI($url),1);
             if (!empty($response['result'][0]) && !empty($response['result'][0]['id'])) {
                 $actorId = $response['result'][0]['id'];
+                $oldData = json_decode(file_get_contents(public_path('processing.json')), 1);
                 if (!empty($revenues['new_revenues'])) {
                     $productIds = array_values(array_unique(array_column($revenues['new_revenues'], 'product_id')));
                     foreach ($productIds as $productId) {
+                        $key =  $sellerToken . '-' . $productId;
+                        if (!empty($oldData) && !empty($oldData[$key])) {
+                            continue;
+                        }
                         $this->updateInfo($productId, $actorId, $appUrl);
-                        sleep(3);
+                        $this->storeDesignData($sellerToken, $productId);
+                        $logData = [
+                            'productId' => $productId,
+                            'sellerToken' => $sellerToken,
+                        ];
+                        \Log::info('processing:'. $sellerToken . '-' . $productId);
+                        $oldData[$key] = $logData;
+                        file_put_contents(public_path('processing.json'), json_encode($oldData));
+                        sleep(15);
                     }
                 }
             }
@@ -329,6 +364,91 @@ class CrawlController extends Controller
             echo 'product error';
         }
     }
+
+    private function storeDesignData($sellerToken, $productId) {
+
+        $seller = \DB::table('seller')
+                    ->where('seller_token', $sellerToken)
+                    ->first();
+
+        if (!empty($seller->connect_api_token)) {
+            \Log::info('store design');
+            $appUrl = 'https://api.printerval.com/';
+            $productNDesign = $appUrl . 'product_n_design?filters=product_id=' . $productId;
+            $response = json_decode($this->callAPI($productNDesign), true);
+            if (!empty($response['result'])) {
+                \Log::info("message: get product n design");
+                $productNDesign = $response['result'][0];
+                if (!empty($productNDesign) && !empty($productNDesign['design_id'])) {
+                    \Log::info('get design:'. $productNDesign['design_id']);
+                    $designId = $productNDesign['design_id'];
+                    $designUrl = $appUrl . 'design/' . $designId . '?service_token=megaads@123';
+                    $designRes = json_decode($this->callAPI($designUrl), true);
+                    if (!empty($designRes['result'])) {
+                        $design = $designRes['result'];
+                        \Log::info('get design success:'. $design['id']);
+                        $this->storeDesign($seller->connect_api_token, $design);
+                    } else {
+                        \Log::info('design error');
+                    }
+                } else {
+                    \Log::info('product n design error');
+                }
+            } else {
+                echo 'product n design error';
+            }
+        }
+
+    }
+
+    private function storeDesign($connectApi, $design) {
+        $tags = $this->getTagsFromTitle($design['name']);
+        $params = [
+            'title' => $design['name'],
+            'image_url' => $design['image_url'],
+            'tags' => $tags
+        ];
+
+        \Log::info('call store design:'. $design['id']);
+        $uploadUrl = 'https://seller.printerval.com/api/store/design';
+        $method = 'POST';
+        $data = [
+            'title' => $params['title'],
+            'image_url' => $params['image_url'],
+            'tags' => implode(',', $params['tags'])
+        ];
+    
+        $response = $this->callAPI($uploadUrl, $method, $data, [
+            'connect-api-token: ' . $connectApi,
+            'Content-Type:application/json'
+        ]);
+    }
+
+    private function getTagsFromTitle($title) {
+        // Remove any special characters from the title
+        $cleanTitle = preg_replace('/[^a-zA-Z0-9\s]/', '', $title);
+    
+        // Convert the title to lowercase
+        $lowercaseTitle = strtolower($cleanTitle);
+    
+        // Split the title into an array of words
+        $words = explode(' ', $lowercaseTitle);
+    
+        // Remove common words and return the remaining words as tags
+        $commonWords = ['the', 'and', 'of', 'in', 'to', 'a', 'is'];
+        $tags = array_diff($words, $commonWords);
+    
+        if (count($tags) > 5) {
+            $tags = array_slice($tags, 0, 5);
+        }
+        if (count($tags) < 3) {
+            $tags[] = 'trending';
+            $tags[] = 'popular';
+        }
+    
+        return $tags;
+    }
+    
     
     private function getProductNUser($productId, $appUrl) {
         $productNUserId = '';
